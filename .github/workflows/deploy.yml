@@ -30,10 +30,10 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: steps.creds.outputs.ready == 'true'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.creds.outputs.ready == 'true'
         with:
           node-version: 24
@@ -72,10 +72,10 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: steps.creds.outputs.ready == 'true'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.creds.outputs.ready == 'true'
         with:
           node-version: 24

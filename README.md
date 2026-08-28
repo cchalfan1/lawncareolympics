@@ -21,7 +21,7 @@ TypeScript, and Tailwind CSS v4, deployed on [Vercel](https://vercel.com).
 npm install
 npm run dev        # http://localhost:3000
 npm run lint       # ESLint
-npx tsc --noEmit   # typecheck
+npx next typegen && npx tsc --noEmit   # typecheck
 npm run build      # production build
 ```
 
