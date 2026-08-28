@@ -1,26 +1,66 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  /* Turf greens */
+  --color-turf-50: #f2f8ee;
+  --color-turf-100: #e1efd8;
+  --color-turf-200: #c3dfb3;
+  --color-turf-300: #9cc985;
+  --color-turf-400: #74af5b;
+  --color-turf-500: #55933e;
+  --color-turf-600: #40752e;
+  --color-turf-700: #335a27;
+  --color-turf-800: #2b4923;
+  --color-turf-900: #253e20;
+  --color-turf-950: #11210e;
+
+  /* Podium gold */
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #fbbf24;
+  --color-gold-500: #f59e0b;
+
+  /* Warm off-white ground */
+  --color-cream: #faf9f3;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-cream);
+  color: var(--color-turf-950);
+}
+
+::selection {
+  background-color: var(--color-turf-200);
+  color: var(--color-turf-950);
+}
+
+/* Mowing-stripe background used in the hero */
+.lawn-stripes {
+  background-image: repeating-linear-gradient(
+    100deg,
+    var(--color-turf-800) 0px,
+    var(--color-turf-800) 90px,
+    var(--color-turf-900) 90px,
+    var(--color-turf-900) 180px
+  );
+}
+
+/* Rotate the FAQ chevron when a <details> is open */
+details[open] .faq-chevron {
+  rotate: 180deg;
 }
