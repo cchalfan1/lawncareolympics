@@ -1,0 +1,97 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  production:
+    name: Production deploy
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+    steps:
+      - name: Check credentials
+        id: creds
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::warning title=Deploy skipped::VERCEL_TOKEN secret is not set. Create a token at https://vercel.com/account/settings/tokens and add it as a repo secret, or connect the repo to Vercel's Git integration instead (see README)."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.creds.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.creds.outputs.ready == 'true'
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Pull Vercel environment
+        if: steps.creds.outputs.ready == 'true'
+        run: npx vercel@latest pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        if: steps.creds.outputs.ready == 'true'
+        run: npx vercel@latest build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        if: steps.creds.outputs.ready == 'true'
+        run: |
+          URL=$(npx vercel@latest deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "### 🚀 Production deploy" >> "$GITHUB_STEP_SUMMARY"
+          echo "$URL" >> "$GITHUB_STEP_SUMMARY"
+
+  preview:
+    name: Preview deploy
+    # Fork PRs don't receive secrets, so only deploy previews for same-repo PRs.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check credentials
+        id: creds
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::warning title=Preview skipped::VERCEL_TOKEN secret is not set (see README)."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.creds.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.creds.outputs.ready == 'true'
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Pull Vercel environment
+        if: steps.creds.outputs.ready == 'true'
+        run: npx vercel@latest pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        if: steps.creds.outputs.ready == 'true'
+        run: npx vercel@latest build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy preview to Vercel
+        if: steps.creds.outputs.ready == 'true'
+        run: |
+          URL=$(npx vercel@latest deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "### 🔍 Preview deploy" >> "$GITHUB_STEP_SUMMARY"
+          echo "$URL" >> "$GITHUB_STEP_SUMMARY"

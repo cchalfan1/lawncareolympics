@@ -30,14 +30,29 @@ Site-wide constants (name, tagline, description, contact email) live in
 
 ## CI/CD
 
-Two independent pieces:
+Two GitHub Actions workflows:
 
-1. **GitHub Actions** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
-   runs lint, typecheck, and a production build on every push to `main` and
-   every pull request.
-2. **Vercel Git integration** — the repo is connected to the Vercel project,
-   so every push to `main` triggers a production deploy and every PR gets a
-   preview deployment automatically. No tokens or workflow config needed.
+1. **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) — lint,
+   typecheck, and production build on every push to `main` and every PR.
+2. **Deploy** ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml))
+   — builds with the Vercel CLI and deploys: production on every push to
+   `main`, a preview deployment for every same-repo PR. Uses repo secrets
+   `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID`.
+
+### One-time deploy setup
+
+`VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` are already set. To activate deploys,
+add the token (until then the deploy job skips with a warning):
+
+1. Create a token at <https://vercel.com/account/settings/tokens>.
+2. `gh secret set VERCEL_TOKEN --body "<token>"` (or add it in repo
+   Settings → Secrets and variables → Actions).
+
+**Alternative:** grant the Vercel GitHub App access to this repo at
+<https://github.com/settings/installations>, then connect it with
+`vercel git connect` (or Vercel dashboard → Project → Settings → Git). That
+enables Vercel's native auto-deploys with PR comments and needs no token — if
+you go that route, delete `deploy.yml` so you don't deploy twice.
 
 ## Hooking up the custom domain
 
