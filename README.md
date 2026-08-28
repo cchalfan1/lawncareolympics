@@ -35,20 +35,14 @@ Two GitHub Actions workflows:
 1. **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) — lint,
    typecheck, and production build on every push to `main` and every PR.
 2. **Deploy** ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml))
-   — builds with the Vercel CLI and deploys: production on every push to
-   `main`, a preview deployment for every same-repo PR. Uses repo secrets
-   `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID`.
+   — uploads the source with the Vercel CLI and lets Vercel build and deploy
+   it: production on every push to `main`, a preview deployment for every
+   same-repo PR. Uses repo secrets `VERCEL_TOKEN` (project-scoped tokens
+   work — the workflow avoids `vercel pull`, which they don't support),
+   `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID`. If the token secret is missing,
+   deploy jobs skip with a warning instead of failing.
 
-### One-time deploy setup
-
-`VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` are already set. To activate deploys,
-add the token (until then the deploy job skips with a warning):
-
-1. Create a token at <https://vercel.com/account/settings/tokens>.
-2. `gh secret set VERCEL_TOKEN --body "<token>"` (or add it in repo
-   Settings → Secrets and variables → Actions).
-
-**Alternative:** grant the Vercel GitHub App access to this repo at
+**Alternative deploy setup:** grant the Vercel GitHub App access to this repo at
 <https://github.com/settings/installations>, then connect it with
 `vercel git connect` (or Vercel dashboard → Project → Settings → Git). That
 enables Vercel's native auto-deploys with PR comments and needs no token — if

@@ -9,6 +9,9 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+# The VERCEL_TOKEN is project-scoped (created in the Vercel dashboard), which
+# supports `vercel deploy` but not `vercel pull`/`whoami` — so we upload the
+# source and let Vercel build it, rather than the pull/build/--prebuilt flow.
 jobs:
   production:
     name: Production deploy
@@ -24,7 +27,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           if [ -z "$VERCEL_TOKEN" ]; then
-            echo "::warning title=Deploy skipped::VERCEL_TOKEN secret is not set. Create a token at https://vercel.com/account/settings/tokens and add it as a repo secret, or connect the repo to Vercel's Git integration instead (see README)."
+            echo "::warning title=Deploy skipped::VERCEL_TOKEN secret is not set (see README)."
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -33,24 +36,10 @@ jobs:
       - uses: actions/checkout@v5
         if: steps.creds.outputs.ready == 'true'
 
-      - uses: actions/setup-node@v5
-        if: steps.creds.outputs.ready == 'true'
-        with:
-          node-version: 24
-          cache: npm
-
-      - name: Pull Vercel environment
-        if: steps.creds.outputs.ready == 'true'
-        run: npx vercel@latest pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build
-        if: steps.creds.outputs.ready == 'true'
-        run: npx vercel@latest build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy to Vercel
+      - name: Deploy to Vercel (production)
         if: steps.creds.outputs.ready == 'true'
         run: |
-          URL=$(npx vercel@latest deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(npx vercel@latest deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }})
           echo "### 🚀 Production deploy" >> "$GITHUB_STEP_SUMMARY"
           echo "$URL" >> "$GITHUB_STEP_SUMMARY"
 
@@ -75,23 +64,9 @@ jobs:
       - uses: actions/checkout@v5
         if: steps.creds.outputs.ready == 'true'
 
-      - uses: actions/setup-node@v5
-        if: steps.creds.outputs.ready == 'true'
-        with:
-          node-version: 24
-          cache: npm
-
-      - name: Pull Vercel environment
-        if: steps.creds.outputs.ready == 'true'
-        run: npx vercel@latest pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build
-        if: steps.creds.outputs.ready == 'true'
-        run: npx vercel@latest build --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy preview to Vercel
+      - name: Deploy to Vercel (preview)
         if: steps.creds.outputs.ready == 'true'
         run: |
-          URL=$(npx vercel@latest deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(npx vercel@latest deploy --yes --token=${{ secrets.VERCEL_TOKEN }})
           echo "### 🔍 Preview deploy" >> "$GITHUB_STEP_SUMMARY"
           echo "$URL" >> "$GITHUB_STEP_SUMMARY"
