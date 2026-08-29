@@ -8,7 +8,7 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const pageTitle = `Lawn Care Olympics 2026 — Compete, Attend, Sponsor | ${event.dateDisplay} · Fayetteville, AR`;
+const pageTitle = "Lawn Care Olympics 2026 — Sept 20 in Fayetteville, AR";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
