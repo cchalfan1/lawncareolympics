@@ -1,8 +1,17 @@
 # Lawn Care Olympics
 
-Marketing/landing site for the Lawn Care Olympics — where the world's best
-lawns go for gold. Built with [Next.js](https://nextjs.org) (App Router),
-TypeScript, and Tailwind CSS v4, deployed on [Vercel](https://vercel.com).
+Standalone landing site for the Lawn Care Olympics — September 20, 2026 in
+Fayetteville, AR. One consolidated page aggregating the copy from all five
+lawnly.com Lawn Olympics audience pages (competitors, attendees, judges,
+vendors, sponsors), with CTAs linking out to the conversion flows on
+lawnly.com. Built with [Next.js](https://nextjs.org) (App Router), TypeScript,
+and Tailwind CSS v4, deployed on [Vercel](https://vercel.com).
+
+Copy, pricing, event facts, and assets are mirrored from the `lawnly2` repo's
+`master` branch (`ui/src/views/lawn-olympics/*`) — treat that as the source of
+truth and keep this page in sync when it changes. Do not invent event details
+here. See [docs/PORTING_ASSESSMENT.md](docs/PORTING_ASSESSMENT.md) for the
+full migration plan.
 
 ## Stack & design goals
 

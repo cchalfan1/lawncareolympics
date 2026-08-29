@@ -2,65 +2,163 @@
 
 @theme inline {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif,
-    system-ui, sans-serif;
 }
 
+/* Palette mirrored from the lawnly.com Lawn Olympics pages:
+   near-black-green ground, slate text, per-audience accents
+   (attendee/judge green, competitor gold, sponsor cyan, vendor amber). */
 @theme {
-  /* Turf greens */
-  --color-turf-50: #f2f8ee;
-  --color-turf-100: #e1efd8;
-  --color-turf-200: #c3dfb3;
-  --color-turf-300: #9cc985;
-  --color-turf-400: #74af5b;
-  --color-turf-500: #55933e;
-  --color-turf-600: #40752e;
-  --color-turf-700: #335a27;
-  --color-turf-800: #2b4923;
-  --color-turf-900: #253e20;
-  --color-turf-950: #11210e;
+  --color-ink: #f8fafc;
+  --color-ink-strong: #f1f5f9;
+  --color-body: #e2e8f0;
+  --color-mute: #94a3b8;
+  --color-dim: #64748b;
+  --color-faint: #475569;
+  --color-soft: #cbd5e1;
 
-  /* Podium gold */
-  --color-gold-300: #fcd34d;
-  --color-gold-400: #fbbf24;
-  --color-gold-500: #f59e0b;
+  --color-grass: #4ade80;
+  --color-grass-deep: #16a34a;
+  --color-gold: #fbbf24;
+  --color-gold-deep: #f97316;
+  --color-sky: #38bdf8;
+  --color-indigo: #6366f1;
+  --color-amber: #f59e0b;
+  --color-amber-deep: #d97706;
 
-  /* Warm off-white ground */
-  --color-cream: #faf9f3;
+  --color-ground: #0a0f0d;
+  --color-ground-2: #0d1a12;
+  --color-ground-3: #091510;
+}
+
+body {
+  background: linear-gradient(
+    180deg,
+    var(--color-ground) 0%,
+    var(--color-ground-2) 40%,
+    var(--color-ground-3) 100%
+  );
+  background-color: var(--color-ground);
+  color: var(--color-body);
 }
 
 html {
   scroll-behavior: smooth;
 }
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 }
 
-body {
-  background-color: var(--color-cream);
-  color: var(--color-turf-950);
-}
-
 ::selection {
-  background-color: var(--color-turf-200);
-  color: var(--color-turf-950);
+  background-color: rgba(74, 222, 128, 0.3);
+  color: #f8fafc;
 }
 
-/* Mowing-stripe background used in the hero */
-.lawn-stripes {
-  background-image: repeating-linear-gradient(
-    100deg,
-    var(--color-turf-800) 0px,
-    var(--color-turf-800) 90px,
-    var(--color-turf-900) 90px,
-    var(--color-turf-900) 180px
-  );
+/* ── Sponsor logo marquee ─────────────────────────────────────── */
+.lo-sponsor-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.lo-sponsor-track {
+  display: flex;
+  width: max-content;
+  animation: lo-sponsor-scroll 44s linear infinite;
+}
+.lo-sponsor-marquee:hover .lo-sponsor-track {
+  animation-play-state: paused;
+}
+@keyframes lo-sponsor-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lo-sponsor-track {
+    animation: none;
+  }
+  .lo-sponsor-marquee {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
 }
 
-/* Rotate the FAQ chevron when a <details> is open */
-details[open] .faq-chevron {
-  rotate: 180deg;
+/* ── Countdown banner ─────────────────────────────────────────── */
+.lo-cd-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(74, 222, 128, 0.42) 50%, transparent 70%);
+  background-size: 200% 100%;
+  opacity: 0.5;
+  animation: lo-cd-sweep 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes lo-cd-sweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.lo-cd-digit {
+  animation: lo-cd-flip 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes lo-cd-flip {
+  0% {
+    transform: translateY(-55%) rotateX(70deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) rotateX(0deg);
+    opacity: 1;
+  }
+}
+.lo-cd-sep {
+  animation: lo-cd-blink 1s steps(1) infinite;
+}
+@keyframes lo-cd-blink {
+  0%,
+  49% {
+    opacity: 0.7;
+  }
+  50%,
+  100% {
+    opacity: 0.15;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lo-cd-sheen,
+  .lo-cd-digit,
+  .lo-cd-sep {
+    animation: none;
+  }
+}
+
+/* ── FAQ disclosure ───────────────────────────────────────────── */
+.lo-faq summary::-webkit-details-marker {
+  display: none;
+}
+.lo-faq summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-gold);
+  transition: transform 0.2s ease;
+}
+.lo-faq[open] summary::after {
+  content: "−";
+}
+.lo-faq:hover {
+  border-color: rgba(251, 191, 36, 0.3);
 }
